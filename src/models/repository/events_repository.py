@@ -3,6 +3,7 @@ from typing import Dict
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
+from src.errors.error_types.http_conflict import HttpConflictError
 from src.models.entities.attendees import Attendees
 from src.models.entities.events import Events
 from src.models.settings.connection import db_connection_handler
@@ -24,7 +25,7 @@ class EventsRepository:
 
                 return eventsInfo
             except IntegrityError:
-                raise Exception('Event is already register!')
+                raise HttpConflictError('Event is already register!')
             except Exception as exception:
                 database.session.rollback()
                 raise exception
