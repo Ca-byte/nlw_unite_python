@@ -23,3 +23,19 @@ class EventHandler:
         event_id = http_request.param["event_id"]
         event = self.__events_repository.get_event_by_id(event_id)
         if not event: raise Exception("Event not found!")
+        
+        event_attendees_count = self.__events_repository.count_event_attendees(event_id)
+
+        return HttpResponse(
+            body={
+                "event": {
+                    "id": event.id,
+                    "title": event.title,
+                    "detail": event.details,
+                    "slug": event.slug,
+                    "maximumAttendees": event.maximum_attendees,
+                    "attendeesAmount": event_attendees_count["attendeesAmount"]
+                }
+            },
+            status_code=200
+        )
