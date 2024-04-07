@@ -10,6 +10,7 @@ from src.models.settings.connection import db_connection_handler
 class EventsRepository:
     def insert_event(self, eventsInfo: Dict) -> Dict:
         with db_connection_handler as database:
+            try:
                 event = Events(
                     id=eventsInfo.get("uuid"),
                     title=eventsInfo.get("title"),
@@ -21,6 +22,11 @@ class EventsRepository:
                 database.session.commit()
 
                 return eventsInfo
+            except IntegrityError:
+                raise Exception('Event is already register!')
+            except Exception as exception:
+                database.session.rollback()
+                raise exception
 
     def get_event_by_id(self, event_id: str) -> Events:
         with db_connection_handler as database:
